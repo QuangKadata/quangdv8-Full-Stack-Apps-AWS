@@ -26,6 +26,19 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util.js';
   //    image_url: URL of a publicly accessible image
   // RETURNS
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
+  app.get("/filteredimage/", async (req, res) => {
+    let { image_url } = req.query;
+    if (!image_url) {
+      return res.status(422).send(`Unprocessable entity`);
+    } else {
+      filterImageFromURL(image_url)
+        .then((result) => {
+          res.sendFile(result);
+          res.on(`finish`, () => deleteLocalFiles([result]));
+        })
+        .catch((err) => res.status(422).send(err));
+    }
+  });
 
     /**************************************************************************** */
 
